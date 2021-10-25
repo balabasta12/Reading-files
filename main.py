@@ -33,21 +33,40 @@ def get_shop_list_by_dishes_1(cook_book, dishes, person_count):
     print()
 
 def get_shop_list_by_dishes(cook_book, dishes, person_count):
-    shopping_dict = {}
-    for dish in dishes:
-        for item in cook_book[dish]:
-            #Создаём словарь спсика блюд
-            items_list = dict(
-                [(item['ingredient_name'],  {'quantity': item['quantity'] * person_count, 'measure': item['measure'].strip()})])
-            if shopping_dict.get(item['ingredient_name']): # Возвращаем значения для указанного ключа, если находим ключ в словаре
-                extra_item = (int(shopping_dict[item['ingredient_name']]['quantity']) + int(items_list[item['ingredient_name']]['quantity']))
-                shopping_dict[item['ingredient_name']]['quantity'] = extra_item #Нашёл в инете, как работает не могу понять "если ключа ещё нет - он создатся, если уже есть - то обновится по формулам"
-            else:
-                shopping_dict.update(items_list) #Добаляет в словарь новый словарь (ключ значения)
-        print(f'Для приготовления блюда "{dish}" на {person_count} человек нам необходимо купить:')
-        pprint(shopping_dict) #Ппринт, как он выводит не понятно, живёт своей жизнью
-        print()
+    # shopping_dict = {}
+    # for dish in dishes:
+    #     for item in cook_book[dish]:
+    #         #Создаём словарь спсика блюд
+    #         items_list = dict(
+    #             [(item['ingredient_name'],  {'quantity': item['quantity'] * person_count, 'measure': item['measure'].strip()})])
+    #         if item['ingredient_name'] in shopping_dict:
+    #             extra_item = (int(shopping_dict[item['ingredient_name']]['quantity']) + int(
+    #                 items_list[item['ingredient_name']]['quantity']))
+    #             shopping_dict[item['ingredient_name']]['quantity'] = extra_item
+    #             shopping_dict.update(items_list)
+    #         # if shopping_dict.get(item['ingredient_name']): # Возвращаем значения для указанного ключа, если находим ключ в словаре
+    #         #     extra_item = (int(shopping_dict[item['ingredient_name']]['quantity']) + int(items_list[item['ingredient_name']]['quantity']))
+    #         #     shopping_dict[item['ingredient_name']]['quantity'] = extra_item #Нашёл в инете, как работает не могу понять "если ключа ещё нет - он создатся, если уже есть - то обновится по формулам"
+    #         # else:
+    #         #     shopping_dict.append(items_list) #Добаляет в словарь новый словарь (ключ значения)
+    #     #print(f'Для приготовления блюда "{dish}" на {person_count} человек нам необходимо купить:')
+    #     pprint(shopping_dict) #Ппринт, как он выводит не понятно, живёт своей жизнью
+    #     print()
 
+    cook_dict = {}
+    for dish in dishes:
+        if dish in cook_book:
+            for ingress_diets in cook_book[dish]:
+                dict_ing = {}
+                if ingress_diets['ingredient_name'] in cook_dict:
+                    quantity = cook_dict[ingress_diets['ingredient_name']].get('quantity') + \
+                               ingress_diets['quantity'] * person_count
+                    cook_dict[ingress_diets['ingredient_name']].update(quantity=quantity)
+                else:
+                    dict_ing['measure'] = ingress_diets['measure']
+                    dict_ing['quantity'] = ingress_diets['quantity'] * person_count
+                    cook_dict[ingress_diets['ingredient_name']] = dict_ing
+    return cook_dict
 
 def read_txt():
     l = []
@@ -105,8 +124,9 @@ def main_logic():
   cook_book = get_cook_book()  # вот теперь тут словарь,  это я понял
   # print(cook_book)
 
-  get_shop_list_by_dishes_1(cook_book, 'Омлет', 2)
-  get_shop_list_by_dishes(cook_book, ['Омлет', 'Фахитос'], 4)
+  # get_shop_list_by_dishes_1(cook_book, 'Омлет', 2)
+  # get_shop_list_by_dishes(cook_book, ['Омлет', 'Фахитос'], 4)
+  pprint(get_shop_list_by_dishes(cook_book, ['Омлет', 'Фахитос', 'Омлет'], 4))
 
   read_txt()
 
